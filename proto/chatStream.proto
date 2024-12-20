@@ -1,5 +1,4 @@
-syntaxt ="proto3";
-
+syntax = "proto3";
 option go_package = "./proto";
 
 package chatStream;
