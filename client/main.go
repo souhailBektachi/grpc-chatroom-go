@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	pb "github.com/souhailBektachi/grpcWithGo/proto"
 	"google.golang.org/grpc"
@@ -40,11 +41,14 @@ func main() {
 			if err != nil {
 				log.Fatalf("failed to receive a message: %v", err)
 			}
-			fmt.Printf("%s :%s \n", msg.User, msg.Message)
+			fmt.Printf("\n%s :%s \n", msg.User, msg.Message)
+
 		}
 	}()
 
-	for scanner.Scan() {
+	for {
+		scanner.Scan()
+
 		msg := &pb.ChatMessage{
 			Message: scanner.Text(),
 		}
@@ -55,6 +59,7 @@ func main() {
 			log.Fatalf("failed to send a message: %v", err)
 			return
 		}
+		time.Sleep(100 * time.Millisecond)
 	}
 
 }

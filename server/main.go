@@ -56,21 +56,25 @@ func (s *ChatServer) Chat(stream pb.ChatStream_ChatServer) error {
 		}
 		s.mu.Unlock()
 	}()
+	var user string
 	go func() {
 		for {
 			msg, err := stream.Recv()
 			if err != nil {
-				log.Fatalf("Client disconnected: %v", err)
+				log.Printf("%s disconnected: %v", user, err)
 				s.mu.Lock()
 				delete(s.clents, stream)
 				s.mu.Unlock()
 				return
 
 			}
-			log.Printf("Message from client: %s", msg.Message)
+			user = msg.User
+			log.Printf("Message from %s: %s", msg.User, msg.Message)
 			s.mu.Lock()
-			for _, ch := range s.clents {
-				ch <- msg
+			for other, ch := range s.clents {
+				if other != stream {
+					ch <- msg
+				}
 			}
 			s.mu.Unlock()
 
